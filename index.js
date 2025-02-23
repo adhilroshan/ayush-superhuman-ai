@@ -27,7 +27,7 @@ const fastify = Fastify();
 fastify.register(fastifyFormBody);
 fastify.register(fastifyWs);
 
-const PORT = process.env.PORT || 5050;
+const PORT = process.env.PORT || 8080;
 
 const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER, MY_PHONE_NUMBER } = process.env;
 if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_PHONE_NUMBER || !MY_PHONE_NUMBER) {
@@ -329,7 +329,7 @@ fastify.post('/call-me', async (req, reply) => {
     }
 });
 
-fastify.listen({ port: PORT }, async (err) => {
+fastify.listen({ port: PORT, host: '0.0.0.0' }, async (err) => {
     if (err) {
         console.error(err);
         process.exit(1);
