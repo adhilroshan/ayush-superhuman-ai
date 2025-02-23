@@ -35,7 +35,7 @@ if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_PHONE_NUMBER || !MY_PHO
     process.exit(1);
 }
 
-const NGROK_URL = 'https://3789-2401-4900-8843-c54b-bcae-e0a9-5bd4-4a96.ngrok-free.app';
+const NGROK_URL = '"http://34.44.144.240:5050";';
 const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
 const RECEPTIONIST_QUESTIONS = [
