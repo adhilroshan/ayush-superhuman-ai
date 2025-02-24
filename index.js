@@ -6,6 +6,10 @@ import fastifyWs from '@fastify/websocket';
 import twilio from 'twilio';
 import FuzzySet from 'fuzzyset.js';
 import { PrismaClient } from '@prisma/client';
+import fastifyCors from '@fastify/cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fastifyStatic from '@fastify/static';
 
 const prisma = new PrismaClient();
 await prisma.$connect();
@@ -22,11 +26,25 @@ if (!OPENAI_API_KEY) {
     console.error('Missing OpenAI API key. Please set it in the .env file.');
     process.exit(1);
 }
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const fastify = Fastify();
 fastify.register(fastifyFormBody);
 fastify.register(fastifyWs);
 
+fastify.register(fastifyStatic, {
+    root: path.join(__dirname, 'frontend'),
+    prefix: '/', // Serve the files under the root path
+  });
+
+fastify.get('/', async (request, reply) => {
+    return reply.sendFile('index.html');
+  });
+
+fastify.register(fastifyCors, {
+    origin: process.env.ALLOWED_ORIGINS?.split(',') || ['*'],
+});
 const PORT = process.env.PORT || 8080;
 
 const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER, MY_PHONE_NUMBER } = process.env;
@@ -35,7 +53,7 @@ if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_PHONE_NUMBER || !MY_PHO
     process.exit(1);
 }
 
-const NGROK_URL = '"http://34.44.144.240:5050";';
+const NGROK_URL = "http://assured-illegally-mink.ngrok-free.app";
 const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
 const RECEPTIONIST_QUESTIONS = [
@@ -316,10 +334,15 @@ fastify.post('/process-call-response', async (req, reply) => {
 });
 
 fastify.post('/call-me', async (req, reply) => {
+    const { phoneNumber } = req.body;  // Get the phone number from the frontend request
+
+    if (!phoneNumber) {
+        return reply.status(400).send({ success: false, message: 'Phone number is required.' });
+    }
     try {
         await twilioClient.calls.create({
             url: `${NGROK_URL}/incoming-call`,
-            to: MY_PHONE_NUMBER,
+            to: req.body.phoneNumber,
             from: TWILIO_PHONE_NUMBER
         });
         reply.send({ success: true, message: 'Call initiated successfully.' });

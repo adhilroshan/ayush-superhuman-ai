@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Call Me</title>
+</head>
+<body>
+    <h1>Enter Your Phone Number</h1>
+    <form id="call-form">
+        <input type="text" id="phone-number" placeholder="Phone Number" required />
+        <button type="submit">Call Me</button>
+    </form>
+    <script>
+        // Handle form submission
+        const form = document.getElementById('call-form');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const phoneNumber = document.getElementById('phone-number').value;
+            try {
+                const response = await fetch('/call-me', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ phoneNumber })
+                });
+                const data = await response.json();
+                alert(data.message);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to initiate call.');
+            }
+        });
+    </script>
+</body>
+</html>
