@@ -9,11 +9,6 @@
     <!-- GSAP Animation Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <style>
-        .form-container, .form-element, .alert {
-            opacity: 0;
-            visibility: hidden;
-        }
-        
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
@@ -114,6 +109,10 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Set initial state for GSAP animations
+            gsap.set('.form-container', { opacity: 0, y: 20 });
+            gsap.set('.form-element', { opacity: 0, y: 20 });
+            
             // GSAP animations on page load
             const timeline = gsap.timeline();
             
@@ -121,21 +120,17 @@
             timeline.to('.form-container', {
                 duration: 0.8,
                 opacity: 1,
-                visibility: 'visible',
                 y: 0,
-                ease: 'power3.out',
-                clearProps: 'all'
+                ease: 'power3.out'
             });
             
             // Staggered animation for form elements
             timeline.to('.form-element', {
                 duration: 0.6,
                 opacity: 1,
-                visibility: 'visible',
                 y: 0,
                 stagger: 0.2,
-                ease: 'power2.out',
-                clearProps: 'all'
+                ease: 'power2.out'
             }, '-=0.4');
             
             // Button hover animation
